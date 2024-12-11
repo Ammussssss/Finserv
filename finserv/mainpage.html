@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Finance Manager</title>
+    <style>
+        body {
+    
+            background-image: url('file:///C:/Users/DELL/Desktop/HACKATHON/bkgd.jpg');
+
+
+}
+    
+
+header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+}
+
+
+
+main {
+    padding: 2rem;
+   
+
+
+}
+
+h1, h2 {
+    margin-bottom: 1rem;
+}
+
+form {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+input, select, button {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.summary-section p {
+    font-size: 1.2rem;
+    margin: 0.5rem 0;
+}
+
+.history-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.history-section li {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    margin-bottom: 0.5rem;
+    border-radius: 5px;
+}
+
+.income {
+    color: green;
+}
+
+.expense {
+    color: red;
+}
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Personal Finance Manager</h1>
+    </header>
+    <main>
+        <section class="form-section">
+            <h2>Add Transaction</h2>
+            <form id="transaction-form">
+                <input type="text" id="description" placeholder="Description" required>
+                <input type="number" id="amount" placeholder="Amount" required>
+                <select id="type" required>
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                </select>
+                <button type="submit">Add</button>
+            </form>
+        </section>
+
+        <section class="summary-section">
+            <h2>Summary</h2>
+            <p>Total Income: <span id="total-income">$0</span></p>
+            <p>Total Expense: <span id="total-expense">$0</span></p>
+            <p>Balance: <span id="balance">$0</span></p>
+        </section>
+
+        <section class="history-section">
+            <h2>Transaction History</h2>
+            <ul id="transaction-history">
+                <!-- Transactions will appear here -->
+            </ul>
+        </section>
+    </main>
+  <script>
+    const transactionForm = document.getElementById('transaction-form');
+const transactionHistory = document.getElementById('transaction-history');
+const totalIncome = document.getElementById('total-income');
+const totalExpense = document.getElementById('total-expense');
+const balance = document.getElementById('balance');
+
+let transactions = [];
+
+function updateSummary() {
+    const income = transactions
+        .filter(transaction => transaction.type === 'income')
+        .reduce((sum, transaction) => sum + transaction.amount, 0);
+    
+    const expense = transactions
+        .filter(transaction => transaction.type === 'expense')
+        .reduce((sum, transaction) => sum + transaction.amount, 0);
+    
+    totalIncome.textContent = `$${income}`;
+    totalExpense.textContent = `$${expense}`;
+    balance.textContent = `$${income - expense}`;
+}
+
+function renderTransactions() {
+    transactionHistory.innerHTML = '';
+    transactions.forEach((transaction, index) => {
+        const li = document.createElement('li');
+        li.className = transaction.type;
+        li.textContent = `${transaction.description}: $${transaction.amount}`;
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.onclick = () => {
+            transactions.splice(index, 1);
+            updateSummary();
+            renderTransactions();
+        };
+        li.appendChild(deleteBtn);
+        transactionHistory.appendChild(li);
+    });
+}
+
+transactionForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const description = document.getElementById('description').value;
+    const amount = parseFloat(document.getElementById('amount').value);
+    const type = document.getElementById('type').value;
+
+    transactions.push({ description, amount, type });
+    transactionForm.reset();
+    updateSummary();
+    renderTransactions();
+});
+
+  </script>
+  
+<section id="budgeting">
+    <h2>Budgeting</h2>
+    <div class="container">
+        <div class="card" id="categories-card">
+            <h3>Categories</h3>
+            <ul class="list-group" id="budget-list">
+            </ul>
+            <input type="text" id="category-name" placeholder="Category Name" />
+            <input type="number" id="category-budget" placeholder="Budget Amount" />
+            <button onclick="addBudgetCategory()">Add Budget</button>
+        </div>
+    </div>
+</section>
+
+<script>
+    function addBudgetCategory() {
+        const name = document.getElementById('category-name').value;
+        const amount = document.getElementById('category-budget').value;
+        if (name && amount) {
+            const budgetList = document.getElementById('budget-list');
+            const newCategory = document.createElement('li');
+            newCategory.textContent = `${name}: $${amount}`;
+            budgetList.appendChild(newCategory);
+        }
+    }
+</script>
+
+<style>
+#budgeting {
+    margin: 1.5rem 0;
+}
+.list-group {
+    list-style: none;
+    padding: 0;
+}
+.list-group li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #ddd;
+}
+.list-group li:last-child {
+    border-bottom: none;
+}
+.card {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 1rem;
+    flex: 1 1 calc(45% - 1rem);
+    min-width: 250px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+</style>
+<section id="goal-tracking">
+    <h2>Goal Tracking</h2>
+    <div class="card" id="goal-tracking-card">
+        <h3>Saving for Laptop</h3>
+        <div class="progress-bar">
+            <div id="progress-bar-fill" style="width: 50%;"></div>
+        </div>
+        <p id="progress-text">Progress: $250 / $500</p>
+        <input type="number" id="goal-progress" placeholder="Add to Goal" />
+        <button onclick="updateGoalProgress()">Update Progress</button>
+    </div>
+</section>
+
+<script>
+    function updateGoalProgress() {
+        const input = document.getElementById('goal-progress').value;
+        if (input) {
+            const progressText = document.getElementById('progress-text').textContent;
+            const [current, total] = progressText.match(/\d+/g).map(Number);
+            const newProgress = Math.min(current + parseInt(input), total);
+            document.getElementById('progress-text').textContent = `Progress: $${newProgress} / $${total}`;
+            document.getElementById('progress-bar-fill').style.width = `${(newProgress / total) * 100}%`;
+        }
+    }
+</script>
+
+<style>
+#goal-tracking {
+    margin: 1.5rem 0;
+}
+.progress-bar {
+    width: 100%;
+    background-color: #ddd;
+    border-radius: 5px;
+    margin-top: 0.5rem;
+}
+.progress-bar div {
+    height: 20px;
+    background-color: #4CAF50;
+    border-radius: 5px;
+    width: 0%;
+}
+</style>
+<section id="expense-tracking">
+    <h2>Expense Tracking</h2>
+    <div class="container">
+        <div class="card">
+            <h3>Smart Scan</h3>
+            <p>Upload receipts or scan QR codes to log expenses instantly.</p>
+            <input type="file" id="receipt-upload" />
+            <button onclick="logExpense()">Log Expense</button>
+        </div>
+    </div>
+</section>
+
+<script>
+    function logExpense() {
+        const receipt = document.getElementById('receipt-upload').value;
+        if (receipt) {
+            alert('Receipt logged successfully!');
+        }
+    }
+</script>
+
+<style>
+#expense-tracking {
+    margin: 1.5rem 0;
+}
+</style>
+<a href="logout.html" class="logout-button">Logout</a>
+<style>
+    .logout-button {
+    position: absolute; /* Position relative to the top-right corner */
+    top: 10px; /* Space from the top */
+    right: 10px; /* Space from the right */
+    text-decoration: none;
+    background-color: #007BFF; /* Button color */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+    background-color: #0056b3; /* Darker on hover */
+}
+
+</style>
+</body>
+</html>
